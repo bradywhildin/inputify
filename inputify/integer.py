@@ -3,12 +3,12 @@ from inspect import signature
 class BadFunctionError(TypeError):
     pass
 
-def validateInt(input, validator=lambda x:True, min=float('-inf'), max=float('inf')):
-    if not isinstance(input, int):
-        raise TypeError('input must be of type int')
+def validateInt(inp, validator=lambda x:True, min=float('-inf'), max=float('inf')):
+    if not isinstance(inp, int):
+        raise TypeError('inp must be of type int')
 
     try:
-        validatorPass = validator(input)
+        validatorPass = validator(inp)
     except TypeError as e:
         if not callable(validator):
             raise TypeError('validator must be of type function')
@@ -21,8 +21,27 @@ def validateInt(input, validator=lambda x:True, min=float('-inf'), max=float('in
         raise BadFunctionError('validator must return a value of type bool')
 
     try:
-        withinRange = input >= min and input <= max
+        withinRange = inp >= min and inp <= max
     except TypeError:
         raise TypeError('min and max must be of type int or float')
         
     return validatorPass and withinRange
+
+class BadInputError(Exception):
+    pass
+
+def getInt(prompt='Enter Int: ', errMsg='Invalid input', maxTries=10, validator=lambda x:True, min=float('-inf'), max=float('inf')):
+    for _ in range(maxTries):
+        inp = input(prompt)
+        try:
+            inp = int(inp)
+        except:
+            print(errMsg)
+            continue
+
+        if validateInt(inp, validator, min, max):
+            return inp
+        else:
+            print(errMsg)
+    
+    raise BadInputError('Max number of tries exceeded')

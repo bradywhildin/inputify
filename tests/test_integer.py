@@ -1,6 +1,9 @@
-import unittest
+## To run these tests, run 'python -m unittest discover' in directory containing inputify/ and tests/
 
-from inputify.integer import BadFunctionError, validateInt
+import unittest
+from unittest.mock import patch
+
+from inputify.integer import BadFunctionError, BadInputError, validateInt, getInt
 
 class TestInteger(unittest.TestCase):
     def test_accept_int(self):
@@ -42,3 +45,20 @@ class TestInteger(unittest.TestCase):
     def test_reject_int_that_fails_validator(self):
         validator = lambda x : x % 2 == 0
         self.assertFalse(validateInt(3, validator=validator))
+
+    # side_effect is list of values that will be given to input() calls
+    @patch('builtins.input', side_effect=['1'])
+    def test_get_int(self, mock_input):
+        self.assertEqual(getInt(), 1)
+
+    @patch('builtins.input', side_effect=['a', '2.1', '3', '-5', '-10', '6', '-2', '2'])
+    def test_get_int_with_partly_bad_input(self, mock_input):
+        validator = lambda x : x % 2 == 0
+        self.assertEqual(getInt(validator=validator, min=-8, max=4), -2)
+
+    @patch('builtins.input', side_effect=['1', '2', '5', '6', '3'])
+    def test_raise_when_too_many_tries(self, mock_input):
+        self.assertRaises(BadInputError, getInt, maxTries=4, min=3, max=4)
+
+if __name__ == '__main__':
+    unittest.main()
