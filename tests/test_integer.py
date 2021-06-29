@@ -54,11 +54,11 @@ class TestInteger(unittest.TestCase):
     @patch('builtins.input', side_effect=['a', '2.1', '3', '-5', '-10', '6', '-2', '2'])
     def test_get_int_with_partly_bad_input(self, mock_input):
         validator = lambda x : x % 2 == 0
-        self.assertEqual(getInt(validator=validator, min=-8, max=4), -2)
+        self.assertEqual(getInt(errMsg='', validator=validator, min=-8, max=4), -2)
 
     @patch('builtins.input', side_effect=['1', '2', '5', '6', '3'])
     def test_raise_when_too_many_tries(self, mock_input):
-        self.assertRaises(BadInputError, getInt, maxTries=4, min=3, max=4)
+        self.assertRaises(BadInputError, getInt, errMsg='', maxTries=4, min=3, max=4)
 
 if __name__ == '__main__':
     unittest.main()
