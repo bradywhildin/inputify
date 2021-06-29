@@ -3,9 +3,9 @@ from inspect import signature
 class BadFunctionError(TypeError):
     pass
 
-def validateInt(inp, validator=lambda x:True, min=float('-inf'), max=float('inf')):
-    if not isinstance(inp, int):
-        raise TypeError('inp must be of type int')
+def validateNum(inp, validator=lambda x:True, min=float('-inf'), max=float('inf')):
+    if not isinstance(inp, int) and not isinstance(inp, float):
+        raise TypeError('inp must be of type int or float')
 
     try:
         validatorPass = validator(inp)
@@ -30,16 +30,16 @@ def validateInt(inp, validator=lambda x:True, min=float('-inf'), max=float('inf'
 class BadInputError(Exception):
     pass
 
-def getInt(prompt='Enter Int: ', errMsg='Invalid input', maxTries=10, validator=lambda x:True, min=float('-inf'), max=float('inf')):
+def getNum(prompt='Enter number: ', errMsg='Invalid input', maxTries=10, validator=lambda x:True, min=float('-inf'), max=float('inf')):
     for _ in range(maxTries):
         inp = input(prompt)
         try:
-            inp = int(inp)
+            inp = float(inp)
         except:
             print(errMsg)
             continue
 
-        if validateInt(inp, validator, min, max):
+        if validateNum(inp, validator, min, max):
             return inp
         else:
             print(errMsg)
